@@ -10,7 +10,7 @@ export interface HubSpotContactProperties {
   lead_soource: "Website" | "App";
 
   // Location (simplified from quiz Q1)
-  location: "South Florida" | "Outside South Florida";
+  location: "Matchmaking Location" | "Waitlist Location";
 
   // Quiz answers (Q2-Q5 full text)
   intent: string;
@@ -56,8 +56,8 @@ export const QUIZ_OUTCOMES = {
 } as const;
 
 export const LOCATIONS = {
-  southFlorida: "South Florida",
-  outsideSouthFlorida: "Outside South Florida",
+  southFlorida: "Matchmaking Location",
+  outsideSouthFlorida: "Waitlist Location",
 } as const;
 
 export const ACCESS_STATUS = {
