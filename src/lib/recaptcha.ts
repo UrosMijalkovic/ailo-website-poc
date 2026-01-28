@@ -17,11 +17,6 @@ interface RecaptchaResponse {
 }
 
 export async function verifyRecaptcha(token: string): Promise<{ success: boolean; score?: number; error?: string }> {
-  // Temporarily disabled for debugging - TODO: re-enable after fixing domain config
-  console.log("reCAPTCHA verification temporarily disabled");
-  return { success: true };
-
-  /*
   if (!RECAPTCHA_SECRET_KEY) {
     console.warn("RECAPTCHA_SECRET_KEY not configured, skipping verification");
     return { success: true }; // Allow through if not configured
@@ -64,5 +59,4 @@ export async function verifyRecaptcha(token: string): Promise<{ success: boolean
     console.error("reCAPTCHA verification error:", error);
     return { success: false, error: "reCAPTCHA verification error" };
   }
-  */
 }

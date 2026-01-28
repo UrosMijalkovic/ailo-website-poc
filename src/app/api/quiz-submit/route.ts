@@ -271,9 +271,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    console.log("Step 1: Initializing database...");
     await initializeDatabase();
+    console.log("Step 1: Database initialized");
 
     // Save to Turso database with full answer text (using sanitized inputs)
+    console.log("Step 2: Saving to Turso database...");
     await db.execute({
       sql: `
         INSERT INTO quiz_submissions (name, email, phone, location, intent, availability, investment, timeline, outcome, lead_source)
@@ -292,8 +295,10 @@ export async function POST(request: NextRequest) {
         "website",
       ],
     });
+    console.log("Step 2: Saved to Turso database");
 
     // Send to HubSpot (with sanitized data)
+    console.log("Step 3: Sending to HubSpot...");
     await sendToHubSpot({
       name: sanitizedName,
       email: sanitizedEmail,
@@ -301,9 +306,11 @@ export async function POST(request: NextRequest) {
       answers,
       outcome,
     });
+    console.log("Step 3: Sent to HubSpot");
 
     // If waitlist outcome, also add to waitlist_subscribers and send confirmation email
     if (outcome === "waitlist") {
+      console.log("Step 4: Processing waitlist...");
       // Get city from Q1 answer for waitlist record
       const locationMap: Record<string, string> = {
         B: "Florida (outside South Florida)",
@@ -318,17 +325,23 @@ export async function POST(request: NextRequest) {
           sql: `INSERT INTO waitlist_subscribers (email, city) VALUES (?, ?)`,
           args: [sanitizedEmail, city],
         });
-      } catch {
-        // Ignore duplicate email error
+        console.log("Step 4a: Added to waitlist_subscribers");
+      } catch (e) {
+        console.log("Step 4a: Duplicate email, skipping waitlist insert");
       }
 
       // Send waitlist confirmation email
+      console.log("Step 4b: Sending waitlist confirmation email...");
       await sendWaitlistConfirmation(sanitizedEmail, city);
+      console.log("Step 4b: Sent waitlist confirmation email");
     }
 
+    console.log("Quiz submission completed successfully");
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Error saving quiz submission:", error);
+    console.error("Error details:", error instanceof Error ? error.message : String(error));
+    console.error("Error stack:", error instanceof Error ? error.stack : "no stack");
     return NextResponse.json(
       { error: "Failed to save submission" },
       { status: 500 }
