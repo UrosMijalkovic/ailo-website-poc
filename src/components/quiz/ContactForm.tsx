@@ -4,20 +4,31 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { useRecaptcha } from "@/hooks/useRecaptcha";
 
 interface ContactFormProps {
-  onSubmit: (data: { phone: string; email: string }) => void;
+  onSubmit: (data: { name: string; phone: string; email: string; recaptchaToken?: string | null }) => void;
   isLoading?: boolean;
+  isWaitlist?: boolean;
 }
 
-export function ContactForm({ onSubmit, isLoading }: ContactFormProps) {
+export function ContactForm({ onSubmit, isLoading, isWaitlist }: ContactFormProps) {
+  const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [agreed, setAgreed] = useState(false);
-  const [errors, setErrors] = useState<{ phone?: string; email?: string; agreed?: string }>({});
+  const [errors, setErrors] = useState<{ name?: string; phone?: string; email?: string; agreed?: string }>({});
+  const { executeRecaptcha } = useRecaptcha();
 
   const validateForm = () => {
     const newErrors: typeof errors = {};
+
+    // Name validation
+    if (!name.trim()) {
+      newErrors.name = "Name is required";
+    } else if (name.trim().length < 2) {
+      newErrors.name = "Please enter your full name";
+    }
 
     // Phone validation (basic)
     if (!phone.trim()) {
@@ -42,10 +53,12 @@ export function ContactForm({ onSubmit, isLoading }: ContactFormProps) {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (validateForm()) {
-      onSubmit({ phone, email });
+      // Get reCAPTCHA token
+      const recaptchaToken = await executeRecaptcha("quiz_submit");
+      onSubmit({ name, phone, email, recaptchaToken });
     }
   };
 
@@ -53,15 +66,45 @@ export function ContactForm({ onSubmit, isLoading }: ContactFormProps) {
     <form onSubmit={handleSubmit} className="space-y-6">
       <div>
         <h2 className="font-[var(--font-playfair)] text-2xl md:text-3xl font-bold text-white mb-2">
-          Almost There!
+          {isWaitlist ? "Join Our Waitlist" : "Almost There!"}
         </h2>
-        <p className="text-white/70 text-sm">
-          We&apos;ll text you a confirmation and call details.
-          Your info stays private — we never spam or sell data.
-        </p>
+        {isWaitlist ? (
+          <div className="space-y-2">
+            <p className="text-[var(--color-accent)] text-sm font-medium">
+              We&apos;re currently only serving South Florida (Palm Beach, Broward, Miami-Dade).
+            </p>
+            <p className="text-white/70 text-sm">
+              Join our waitlist and we&apos;ll notify you when we expand to your area.
+            </p>
+          </div>
+        ) : (
+          <p className="text-white/70 text-sm">
+            We&apos;ll text you a confirmation and call details.
+            Your info stays private — we never spam or sell data.
+          </p>
+        )}
       </div>
 
       <div className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="name" className="text-white">
+            Full Name *
+          </Label>
+          <Input
+            id="name"
+            type="text"
+            placeholder="Jane Smith"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className={`bg-white/10 border-white/20 text-white placeholder:text-white/50 focus:border-[var(--color-accent)] ${
+              errors.name ? "border-red-400" : ""
+            }`}
+          />
+          {errors.name && (
+            <p className="text-red-400 text-sm">{errors.name}</p>
+          )}
+        </div>
+
         <div className="space-y-2">
           <Label htmlFor="phone" className="text-white">
             Phone Number *
@@ -147,6 +190,8 @@ export function ContactForm({ onSubmit, isLoading }: ContactFormProps) {
             </svg>
             Processing...
           </span>
+        ) : isWaitlist ? (
+          "Join Waitlist →"
         ) : (
           "See My Results →"
         )}

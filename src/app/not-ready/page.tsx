@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
+import { NewsletterForm } from "./NewsletterForm";
 
 export const metadata: Metadata = {
   title: "Timing is Everything",
@@ -76,19 +77,7 @@ export default function NotReadyPage() {
                 <li>• Communication patterns that predict success</li>
                 <li>• Red flags vs. preferences: knowing the difference</li>
               </ul>
-              <form className="flex flex-col sm:flex-row gap-2 max-w-md mx-auto">
-                <input
-                  type="email"
-                  placeholder="Your email"
-                  className="flex-1 px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder:text-white/50 focus:outline-none focus:border-[var(--color-accent)]"
-                />
-                <button
-                  type="submit"
-                  className="px-6 py-3 bg-[var(--color-accent)] hover:bg-[var(--color-accent)]/90 rounded-xl text-[var(--color-primary-dark)] font-medium transition-colors whitespace-nowrap"
-                >
-                  Subscribe
-                </button>
-              </form>
+              <NewsletterForm />
             </div>
 
             {/* Personal Note from Haleh */}

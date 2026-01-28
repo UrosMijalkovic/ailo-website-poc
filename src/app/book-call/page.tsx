@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
+import { CalendlyEmbed } from "@/components/CalendlyEmbed";
+import { SlotAvailability } from "@/components/SlotAvailability";
 
 export const metadata: Metadata = {
   title: "Book Your Strategy Call | AILO",
@@ -71,7 +73,7 @@ export default function BookCallPage() {
 
             {/* Left Column - Calendly (Primary Focus) */}
             <div className="lg:col-span-3 order-2 lg:order-1">
-              <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
+              <div className="bg-[var(--color-primary-dark)] rounded-2xl shadow-2xl overflow-hidden border border-white/10">
                 {/* Calendly Header */}
                 <div className="bg-[var(--color-primary-dark)] px-6 py-4 flex items-center justify-between">
                   <div>
@@ -82,40 +84,12 @@ export default function BookCallPage() {
                       20 minutes • Video or Phone
                     </p>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
-                    <span className="text-xs text-white/70">
-                      8 slots this week
-                    </span>
-                  </div>
+                  <SlotAvailability />
                 </div>
 
                 {/* Calendly Embed Area */}
                 <div className="p-2">
-                  <div className="aspect-[4/3] md:aspect-[3/2] bg-gray-50 rounded-lg flex items-center justify-center">
-                    {/* Replace this div with actual Calendly embed */}
-                    <div className="text-center p-8">
-                      <svg
-                        className="w-16 h-16 mx-auto text-[var(--color-primary)]/20 mb-4"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={1.5}
-                          d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                        />
-                      </svg>
-                      <p className="text-[var(--color-primary)] font-medium mb-1">
-                        Calendly Widget
-                      </p>
-                      <p className="text-gray-400 text-sm">
-                        Integration ready
-                      </p>
-                    </div>
-                  </div>
+                  <CalendlyEmbed />
                 </div>
               </div>
 

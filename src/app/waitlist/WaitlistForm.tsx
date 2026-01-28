@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { trackWaitlistJoined } from "@/lib/analytics";
 
 const cities = [
   { value: "", label: "Select your city..." },
@@ -40,11 +41,32 @@ export function WaitlistForm() {
     setError("");
     setIsLoading(true);
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    try {
+      const cityLabel = city ? cities.find((c) => c.value === city)?.label : undefined;
+      const response = await fetch("/api/waitlist", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, city: cityLabel }),
+      });
 
-    setIsLoading(false);
-    setIsSubmitted(true);
+      if (!response.ok) {
+        const data = await response.json();
+        if (response.status === 409) {
+          setError("You're already on the waitlist!");
+        } else {
+          setError(data.error || "Something went wrong. Please try again.");
+        }
+        setIsLoading(false);
+        return;
+      }
+
+      trackWaitlistJoined(cityLabel);
+      setIsSubmitted(true);
+    } catch {
+      setError("Something went wrong. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   if (isSubmitted) {
