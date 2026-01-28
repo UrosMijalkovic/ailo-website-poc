@@ -77,6 +77,7 @@ export function CalendlyEmbed() {
     // Get prefill data from sessionStorage
     let prefillEmail = "";
     let prefillName = "";
+    let prefillPhone = "";
     const quizDataStr = sessionStorage.getItem("quizData");
     if (quizDataStr) {
       try {
@@ -86,6 +87,9 @@ export function CalendlyEmbed() {
         }
         if (quizData.contact?.name) {
           prefillName = quizData.contact.name;
+        }
+        if (quizData.contact?.phone) {
+          prefillPhone = quizData.contact.phone;
         }
       } catch {
         console.error("Failed to parse quiz data");
@@ -100,6 +104,7 @@ export function CalendlyEmbed() {
         const params = new URLSearchParams();
         if (prefillName) params.set("name", prefillName);
         if (prefillEmail) params.set("email", prefillEmail);
+        if (prefillPhone) params.set("a1", prefillPhone);
         params.set("background_color", "2d3a40");
         params.set("text_color", "ebebeb");
         params.set("primary_color", "e1b98f");
