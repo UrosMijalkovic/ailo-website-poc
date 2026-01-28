@@ -330,10 +330,14 @@ export async function POST(request: NextRequest) {
         console.log("Step 4a: Duplicate email, skipping waitlist insert");
       }
 
-      // Send waitlist confirmation email
+      // Send waitlist confirmation email (non-blocking - don't fail submission if email fails)
       console.log("Step 4b: Sending waitlist confirmation email...");
-      await sendWaitlistConfirmation(sanitizedEmail, city);
-      console.log("Step 4b: Sent waitlist confirmation email");
+      try {
+        await sendWaitlistConfirmation(sanitizedEmail, city);
+        console.log("Step 4b: Sent waitlist confirmation email");
+      } catch (emailError) {
+        console.error("Step 4b: Failed to send waitlist email (non-blocking):", emailError);
+      }
     }
 
     console.log("Quiz submission completed successfully");
